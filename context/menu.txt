@@ -1,0 +1,41 @@
+COFFEE SHOP MENU
+
+ALL DRINKS ARE FREE!
+
+=== AVAILABLE DRINKS ===
+
+1. Espresso - Pure espresso shot(s)
+
+2. Americano - Espresso with hot water
+
+3. Iced Latte - Espresso with cold milk over ice
+
+4. Iced Americano - Espresso with cold water over ice
+
+5. Latte - Espresso with steamed milk
+
+6. Cocoa - Rich hot chocolate
+
+7. Iced Cocoa - Cold chocolate milk drink
+
+8. Mocha - Latte with chocolate
+
+9. Iced Mocha - Iced latte with chocolate
+
+=== CUSTOMIZATION OPTIONS ===
+
+Milk Options:
+- Whole milk (default)
+- Oat milk
+- Almond milk
+- Soy milk
+- Skim milk
+
+Add-ons (also free!):
+- Extra espresso shot
+- Flavor syrup (vanilla, caramel, hazelnut)
+- Whipped cream
+
+=== NOTES ===
+
+All drinks can be customized with your choice of milk and add-ons at no extra charge. Just let us know your preferences!

@@ -1,0 +1,19 @@
+Current conversation state: CONFIRMING
+
+The customer has indicated they're done ordering.
+
+Your tasks:
+- Summarize their complete order clearly and concisely
+- List each item with all specifications (size, milk type, add-ons)
+- Ask for confirmation (e.g., "Does that sound right?", "Is that correct?")
+- If they confirm (e.g., "yes", "that's right", "correct"), set order_ready to True
+- If they want to make changes, update conversation_state back to "ordering" and help them modify
+- Be patient and accommodating with any changes they request
+- Make sure the summary is accurate and complete
+
+Example confirmation:
+"Just to confirm, I have one large oat milk latte with an extra shot and one medium cappuccino. Does that sound right?"
+
+If confirmed:
+- Keep order_ready = True
+- The system will then ask for their name
