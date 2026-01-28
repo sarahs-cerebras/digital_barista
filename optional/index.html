@@ -254,6 +254,7 @@
             padding: 40px;
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
+            position: relative;
         }
 
         #visualizer.recording {
@@ -267,6 +268,9 @@
         #audioCanvas {
             width: 100%;
             height: 100%;
+            position: relative;
+            z-index: 1;
+            pointer-events: none;
         }
 
         .visualizer-hint {
@@ -290,6 +294,128 @@
 
         .recording-indicator.active {
             opacity: 1;
+        }
+
+        /* Overlay Badge */
+        .overlay-badge {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 28px;
+            opacity: 1;
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .overlay-badge.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .overlay-badge-icon {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            animation: pulseIcon 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseIcon {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.9;
+            }
+        }
+
+        .overlay-badge-text {
+            color: #FFFFFF;
+            font-size: 1.3em;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            text-align: center;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Ending Screen */
+        .ending-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, #000000 0%, #0A0A0A 100%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .ending-screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .ending-logo {
+            width: 80px;
+            height: auto;
+            margin-bottom: 32px;
+            opacity: 0.95;
+        }
+
+        .ending-title {
+            font-size: 3em;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+            color: #FFFFFF;
+            background: linear-gradient(135deg, #FFFFFF 0%, #A0A0A0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+        }
+
+        .ending-subtitle {
+            font-size: 1.1em;
+            font-weight: 400;
+            color: #A1A1A6;
+            margin-bottom: 48px;
+            letter-spacing: 0.01em;
+            text-align: center;
+            max-width: 600px;
+            line-height: 1.5;
+        }
+
+        .ending-qr-code {
+            width: 280px;
+            height: 280px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(224, 100, 57, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.1);
         }
 
         /* Reset text */
@@ -377,6 +503,13 @@
             <div class="visualizer-hint">Press and hold the waveform to speak. Please record for at least two seconds.</div>
             <div id="visualizer">
                 <canvas id="audioCanvas"></canvas>
+                <div class="overlay-badge" id="overlayBadge">
+                    <svg class="overlay-badge-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 14C13.66 14 15 12.66 15 11V5C15 3.34 13.66 2 12 2C10.34 2 9 3.34 9 5V11C9 12.66 10.34 14 12 14Z" fill="#E06439"/>
+                        <path d="M17 11C17 14.53 14.39 17.14 11 17.93V19H14C14.55 19 15 19.45 15 20C15 20.55 14.55 21 14 21H10C9.45 21 9 20.55 9 20C9 19.45 9.45 19 10 19H13V17.93C9.61 17.14 7 14.53 7 11H9C9 13.76 11.24 16 14 16H12C14.76 16 17 13.76 17 11V11Z" fill="#E06439"/>
+                    </svg>
+                    <div class="overlay-badge-text">Press & Hold to Speak</div>
+                </div>
             </div>
             <div class="visualizer-status">Blue: Microphone Standby · Orange: Recording Active</div>
             <div class="recording-indicator" id="recordingIndicator">Recording...</div>
@@ -389,6 +522,14 @@
     </div>
 
     <div class="reset-text">Please reload page to reset the Barista</div>
+
+    <!-- Ending Screen -->
+    <div class="ending-screen" id="endingScreen">
+        <img src="cerebras_assets/logo-dark-mode.png" alt="Cerebras" class="ending-logo" />
+        <h1 class="ending-title">Thanks for your order!</h1>
+        <p class="ending-subtitle">You can check on the status of your order at this QR Code</p>
+        <img src="cerebras_assets/ending_qr_code.png" alt="Order Status QR Code" class="ending-qr-code" />
+    </div>
 
     <script>
         // API Configuration
@@ -420,6 +561,8 @@
         const userMessages = document.getElementById('userMessages');
         const thinkingBubble = document.getElementById('thinkingBubble');
         const recordingIndicator = document.getElementById('recordingIndicator');
+        const overlayBadge = document.getElementById('overlayBadge');
+        const endingScreen = document.getElementById('endingScreen');
 
         // State
         let audioContext, analyser, dataArray, canvasCtx;
@@ -429,6 +572,9 @@
         let recordingTimeout = null;
         let currentAudio = null;
         let welcomeData = null;
+        let overlayHidden = false;
+        let lastInteractionTime = Date.now();
+        let inactivityTimer = null;
 
         // Initialize Canvas Visualizer
         function initVisualizer() {
@@ -639,6 +785,11 @@
                             
                             addMessage(data.response_text, "assistant");
                             
+                            // Check if order is complete
+                            if (data.state === "complete" && data.order_complete === true) {
+                                showEndingScreen();
+                            }
+                            
                             if (data.audio_data) {
                                 currentAudio = new Audio('data:audio/wav;base64,' + data.audio_data);
                                 currentAudio.play().catch(err => console.error('Audio error:', err));
@@ -677,6 +828,51 @@
             isRecording = false;
             visualizerDiv.classList.remove('recording');
             recordingIndicator.classList.remove('active');
+            
+            resetInactivityTimer();
+        }
+
+        // Overlay Badge Functions
+        function showOverlayBadge() {
+            overlayBadge.classList.remove('hidden');
+            overlayHidden = false;
+        }
+
+        function hideOverlayBadge() {
+            overlayBadge.classList.add('hidden');
+            overlayHidden = true;
+        }
+
+        function resetInactivityTimer() {
+            lastInteractionTime = Date.now();
+            
+            if (inactivityTimer) {
+                clearTimeout(inactivityTimer);
+            }
+            
+            // Show overlay after 30 seconds of inactivity
+            inactivityTimer = setTimeout(() => {
+                const timeSinceLastInteraction = Date.now() - lastInteractionTime;
+                if (timeSinceLastInteraction >= 30000 && !isRecording) {
+                    showOverlayBadge();
+                }
+            }, 30000);
+        }
+
+        // Ending Screen Function
+        function showEndingScreen() {
+            endingScreen.classList.add('active');
+            
+            // Stop any ongoing recording
+            if (isRecording) {
+                stopRecording();
+            }
+            
+            // Stop any playing audio
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
         }
 
         // Event Listeners
@@ -700,6 +896,19 @@
         visualizerDiv.addEventListener('touchend', (e) => {
             e.preventDefault();
             stopRecording();
+        });
+
+        // Hide overlay badge on hover
+        visualizerDiv.addEventListener('mouseenter', () => {
+            if (!overlayHidden) {
+                hideOverlayBadge();
+            }
+        });
+
+        visualizerDiv.addEventListener('touchstart', (e) => {
+            if (!overlayHidden) {
+                hideOverlayBadge();
+            }
         });
 
         // Handle window resize
