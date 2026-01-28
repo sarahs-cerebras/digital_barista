@@ -374,11 +374,11 @@
 
         <!-- Visualizer (Center) -->
         <div class="visualizer-container">
-            <div class="visualizer-status">Blue: Microphone Standby · Orange: Recording Active</div>
+            <div class="visualizer-hint">Press and hold the waveform to speak. Please record for at least two seconds.</div>
             <div id="visualizer">
                 <canvas id="audioCanvas"></canvas>
             </div>
-            <div class="visualizer-hint">Press and hold to speak</div>
+            <div class="visualizer-status">Blue: Microphone Standby · Orange: Recording Active</div>
             <div class="recording-indicator" id="recordingIndicator">Recording...</div>
         </div>
 
@@ -393,6 +393,22 @@
     <script>
         // API Configuration
         const API_URL = 'https://brianna-unpalliative-lavelle.ngrok-free.dev';
+        
+        // Call reset endpoint on page load
+        async function resetOnPageLoad() {
+            try {
+                await fetch(`${API_URL}/reset`, {
+                    method: 'POST',
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
+                console.log('Reset endpoint called successfully');
+            } catch (error) {
+                console.error('Error calling reset endpoint:', error);
+            }
+        }
+
+        // Initialize reset on page load
+        document.addEventListener('DOMContentLoaded', resetOnPageLoad);
         
         // DOM Elements
         const landingPage = document.getElementById('landingPage');
