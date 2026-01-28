@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Barista</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
+            background: linear-gradient(180deg, #000000 0%, #0A0A0A 100%);
+            min-height: 100vh;
+            color: #FFFFFF;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Landing Page */
+        .landing-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            background: radial-gradient(ellipse at top, #1A1A1E 0%, #000000 70%);
+        }
+
+        .landing-page.hidden {
+            display: none;
+        }
+
+        .cerebras-logo {
+            width: 80px;
+            height: auto;
+            margin-bottom: 24px;
+            opacity: 0.95;
+        }
+
+        .landing-title {
+            font-size: 3.5em;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+            color: #FFFFFF;
+            background: linear-gradient(135deg, #FFFFFF 0%, #A0A0A0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .landing-subtitle {
+            font-size: 1.2em;
+            font-weight: 400;
+            color: #A1A1A6;
+            margin-bottom: 48px;
+            letter-spacing: 0.01em;
+        }
+
+        .start-button {
+            background: rgb(224, 100, 57);
+            color: #FFFFFF;
+            border: none;
+            padding: 18px 48px;
+            font-size: 1.1em;
+            font-weight: 600;
+            font-family: inherit;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.01em;
+            box-shadow: 0 4px 24px rgba(224, 100, 57, 0.3);
+        }
+
+        .start-button:hover {
+            background: rgb(200, 85, 45);
+            transform: scale(1.05);
+            box-shadow: 0 8px 32px rgba(224, 100, 57, 0.4);
+        }
+
+        .start-button:active {
+            transform: scale(0.98);
+        }
+
+        /* Main App */
+        .app-container {
+            display: none;
+            height: 100vh;
+            grid-template-columns: 1fr 600px 1fr;
+            gap: 24px;
+            padding: 32px;
+        }
+
+        .app-container.active {
+            display: grid;
+        }
+
+        /* Message Columns */
+        .message-column {
+            display: flex;
+            flex-direction: column-reverse;
+            overflow: hidden;
+            position: relative;
+            background: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border-radius: 24px;
+            padding: 24px;
+        }
+
+        .message-column::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+            z-index: 10;
+            pointer-events: none;
+            border-radius: 24px 24px 0 0;
+        }
+
+        .messages-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-bottom: 16px;
+        }
+
+        .message {
+            padding: 16px 24px;
+            border-radius: 20px;
+            line-height: 1.5;
+            animation: messageFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 85%;
+            font-size: 0.95em;
+            font-weight: 400;
+        }
+
+        @keyframes messageFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .assistant-message {
+            background: rgba(52, 52, 58, 0.8);
+            color: #FFFFFF;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            align-self: flex-start;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, rgb(224, 100, 57) 0%, rgb(200, 85, 45) 100%);
+            color: #FFFFFF;
+            align-self: flex-end;
+            box-shadow: 0 4px 20px rgba(224, 100, 57, 0.3);
+        }
+
+        /* Thinking Bubble */
+        .thinking-bubble {
+            background: rgba(52, 52, 58, 0.8);
+            color: #FFFFFF;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 16px 24px;
+            border-radius: 20px;
+            align-self: flex-start;
+            display: none;
+            max-width: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .thinking-bubble.active {
+            display: block;
+            animation: messageFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .thinking-dots {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .thinking-dots span {
+            width: 8px;
+            height: 8px;
+            background: rgb(224, 100, 57);
+            border-radius: 50%;
+            animation: pulseDot 1.4s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .thinking-dots span:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .thinking-dots span:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes pulseDot {
+            0%, 60%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            30% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        /* Visualizer Container */
+        .visualizer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .visualizer-status {
+            margin-bottom: 16px;
+            color: #A1A1A6;
+            font-size: 0.8em;
+            font-style: italic;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+        }
+
+        #visualizer {
+            width: 100%;
+            height: 420px;
+            cursor: pointer;
+            background: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+        }
+
+        #visualizer.recording {
+            box-shadow: 0 8px 40px rgba(224, 100, 57, 0.2);
+        }
+
+        #visualizer:active {
+            transform: scale(0.98);
+        }
+
+        #audioCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .visualizer-hint {
+            margin-top: 24px;
+            color: #A1A1A6;
+            font-size: 0.9em;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            text-align: center;
+        }
+
+        .recording-indicator {
+            margin-top: 12px;
+            color: #FF3B30;
+            font-size: 0.85em;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            opacity: 0;
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .recording-indicator.active {
+            opacity: 1;
+        }
+
+        /* Reset text */
+        .reset-text {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75em;
+            font-style: italic;
+            color: #6E6E73;
+            letter-spacing: 0.01em;
+            font-weight: 400;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .app-container {
+                grid-template-columns: 1fr 500px 1fr;
+                gap: 16px;
+                padding: 20px;
+            }
+
+            #visualizer {
+                height: 360px;
+            }
+
+            .message-column,
+            #visualizer {
+                border-radius: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr auto 1fr;
+                padding: 16px;
+                gap: 12px;
+            }
+
+            .cerebras-logo {
+                width: 60px;
+            }
+
+            .landing-title {
+                font-size: 2.5em;
+            }
+
+            .message-column {
+                min-height: 200px;
+            }
+
+            #visualizer {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Page -->
+    <div class="landing-page" id="landingPage">
+        <img src="cerebras_assets/logo-dark-mode.png" alt="Cerebras" class="cerebras-logo" />
+        <h1 class="landing-title">Cafe Compute Ordering System</h1>
+        <p class="landing-subtitle">Cerebras-powered Voice Ordering</p>
+        <button class="start-button" id="startBtn">Start Ordering</button>
+    </div>
+
+    <!-- Main App -->
+    <div class="app-container" id="appContainer">
+        <!-- Assistant Messages (Left) -->
+        <div class="message-column" id="assistantColumn">
+            <div class="thinking-bubble" id="thinkingBubble">
+                <div class="thinking-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="messages-wrapper" id="assistantMessages"></div>
+        </div>
+
+        <!-- Visualizer (Center) -->
+        <div class="visualizer-container">
+            <div class="visualizer-status">Blue: Microphone Standby · Orange: Recording Active</div>
+            <div id="visualizer">
+                <canvas id="audioCanvas"></canvas>
+            </div>
+            <div class="visualizer-hint">Press and hold to speak</div>
+            <div class="recording-indicator" id="recordingIndicator">Recording...</div>
+        </div>
+
+        <!-- User Messages (Right) -->
+        <div class="message-column" id="userColumn">
+            <div class="messages-wrapper" id="userMessages"></div>
+        </div>
+    </div>
+
+    <div class="reset-text">Please reload page to reset the Barista</div>
+
+    <script>
+        // API Configuration
+        const API_URL = 'https://brianna-unpalliative-lavelle.ngrok-free.dev';
+        
+        // DOM Elements
+        const landingPage = document.getElementById('landingPage');
+        const appContainer = document.getElementById('appContainer');
+        const startBtn = document.getElementById('startBtn');
+        const visualizerDiv = document.getElementById('visualizer');
+        const audioCanvas = document.getElementById('audioCanvas');
+        const assistantMessages = document.getElementById('assistantMessages');
+        const userMessages = document.getElementById('userMessages');
+        const thinkingBubble = document.getElementById('thinkingBubble');
+        const recordingIndicator = document.getElementById('recordingIndicator');
+
+        // State
+        let audioContext, analyser, dataArray, canvasCtx;
+        let mediaRecorder, audioChunks = [];
+        let isRecording = false;
+        let audioStream = null;
+        let recordingTimeout = null;
+        let currentAudio = null;
+        let welcomeData = null;
+
+        // Initialize Canvas Visualizer
+        function initVisualizer() {
+            const rect = audioCanvas.getBoundingClientRect();
+            audioCanvas.width = rect.width * 2;
+            audioCanvas.height = rect.height * 2;
+            canvasCtx = audioCanvas.getContext('2d');
+            canvasCtx.scale(2, 2);
+
+            draw();
+        }
+
+        // Draw visualization
+        function draw() {
+            requestAnimationFrame(draw);
+
+            const width = audioCanvas.width / 2;
+            const height = audioCanvas.height / 2;
+
+            canvasCtx.clearRect(0, 0, width, height);
+
+            if (!analyser || !dataArray) {
+                drawIdleBars(width, height);
+                return;
+            }
+
+            analyser.getByteFrequencyData(dataArray);
+            drawAudioBars(width, height);
+        }
+
+        // Draw idle state bars with smooth animation
+        function drawIdleBars(width, height) {
+            const barCount = 32;
+            const barWidth = (width / barCount) - 8;
+            const time = Date.now() / 1000;
+
+            for (let i = 0; i < barCount; i++) {
+                const x = i * (barWidth + 8) + 4;
+                const barHeight = 24 + Math.sin(time * 2 + i * 0.25) * 20;
+                const y = (height - barHeight) / 2;
+
+                const gradient = canvasCtx.createLinearGradient(x, y, x, y + barHeight);
+                gradient.addColorStop(0, '#007AFF');
+                gradient.addColorStop(1, '#0051D5');
+                
+                canvasCtx.fillStyle = gradient;
+                canvasCtx.beginPath();
+                canvasCtx.roundRect(x, y, barWidth, barHeight, 6);
+                canvasCtx.fill();
+            }
+        }
+
+        // Draw audio bars with smooth animation
+        function drawAudioBars(width, height) {
+            const barCount = 64;
+            const barWidth = (width / barCount) - 4;
+
+            for (let i = 0; i < barCount; i++) {
+                const x = i * (barWidth + 4) + 2;
+                
+                const freqIndex = Math.floor(i * dataArray.length / barCount);
+                const value = dataArray[freqIndex];
+                const smoothedValue = value * value / 255;
+                const barHeight = Math.max(12, (smoothedValue / 255) * (height - 48));
+                const y = (height - barHeight) / 2;
+
+                let gradient;
+                if (isRecording) {
+                    gradient = canvasCtx.createLinearGradient(x, y, x, y + barHeight);
+                    gradient.addColorStop(0, `rgba(255, 59, 48, ${0.6 + value * 0.004})`);
+                    gradient.addColorStop(1, `rgba(255, 149, 0, ${0.4 + value * 0.003})`);
+                } else {
+                    gradient = canvasCtx.createLinearGradient(x, y, x, y + barHeight);
+                    gradient.addColorStop(0, 'rgba(0, 122, 255, 0.8)');
+                    gradient.addColorStop(1, 'rgba(0, 81, 213, 0.6)');
+                }
+
+                canvasCtx.fillStyle = gradient;
+                canvasCtx.beginPath();
+                canvasCtx.roundRect(x, y, barWidth, barHeight, 4);
+                canvasCtx.fill();
+            }
+        }
+
+        // Setup Audio Context
+        async function setupAudioAnalysis() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                analyser.smoothingTimeConstant = 0.8;
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+                if (!audioStream) {
+                    audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                }
+
+                const source = audioContext.createMediaStreamSource(audioStream);
+                source.connect(analyser);
+            } catch (error) {
+                console.error('Audio analysis setup error:', error);
+            }
+        }
+
+        // Show/Hide Thinking
+        function showThinking() {
+            thinkingBubble.classList.add('active');
+        }
+
+        function hideThinking() {
+            thinkingBubble.classList.remove('active');
+        }
+
+        // Add Message
+        function addMessage(text, role) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}-message`;
+            messageDiv.textContent = text;
+            
+            if (role === 'assistant') {
+                assistantMessages.appendChild(messageDiv);
+            } else {
+                userMessages.appendChild(messageDiv);
+            }
+        }
+
+        // Load Welcome Message
+        async function loadWelcome() {
+            showThinking();
+            
+            try {
+                const response = await fetch(`${API_URL}/welcome`, {
+                    method: 'GET',
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
+                
+                const responseText = await response.text();
+                const contentType = response.headers.get('content-type');
+                
+                if (contentType && contentType.includes('application/json')) {
+                    const data = JSON.parse(responseText);
+                    
+                    if (data.success) {
+                        welcomeData = data;
+                        addMessage(data.response_text, "assistant");
+                        
+                        if (data.audio_data) {
+                            currentAudio = new Audio('data:audio/wav;base64,' + data.audio_data);
+                            currentAudio.play().catch(err => console.error('Audio error:', err));
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading welcome:', error);
+            } finally {
+                hideThinking();
+            }
+        }
+
+        // Start Recording
+        async function startRecording() {
+            if (isRecording) return;
+
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+
+            try {
+                if (!audioStream) {
+                    audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    await setupAudioAnalysis();
+                }
+                
+                mediaRecorder = new MediaRecorder(audioStream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    
+                    if (audioBlob.size < 1000) {
+                        return;
+                    }
+                    
+                    const formData = new FormData();
+                    formData.append('audio', audioBlob, 'recording.webm');
+                    
+                    showThinking();
+                    
+                    try {
+                        const response = await fetch(`${API_URL}/process`, {
+                            method: 'POST',
+                            headers: { 'ngrok-skip-browser-warning': 'true' },
+                            body: formData
+                        });
+                        
+                        const data = await response.json();
+                        hideThinking();
+                        
+                        if (data.success) {
+                            if (data.user_text) {
+                                addMessage(data.user_text, "user");
+                            }
+                            
+                            addMessage(data.response_text, "assistant");
+                            
+                            if (data.audio_data) {
+                                currentAudio = new Audio('data:audio/wav;base64,' + data.audio_data);
+                                currentAudio.play().catch(err => console.error('Audio error:', err));
+                            }
+                        } else {
+                            addMessage("Error: " + (data.error || 'Unknown error'), "assistant");
+                        }
+                    } catch (error) {
+                        hideThinking();
+                        console.error('Error:', error);
+                    }
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                visualizerDiv.classList.add('recording');
+                recordingIndicator.classList.add('active');
+                
+                recordingTimeout = setTimeout(() => stopRecording(), 20000);
+            } catch (error) {
+                console.error('Microphone error:', error);
+                alert('Please allow microphone access');
+            }
+        }
+
+        // Stop Recording
+        function stopRecording() {
+            if (!isRecording) return;
+
+            if (recordingTimeout) {
+                clearTimeout(recordingTimeout);
+                recordingTimeout = null;
+            }
+
+            mediaRecorder.stop();
+            isRecording = false;
+            visualizerDiv.classList.remove('recording');
+            recordingIndicator.classList.remove('active');
+        }
+
+        // Event Listeners
+        startBtn.addEventListener('click', async () => {
+            landingPage.classList.add('hidden');
+            appContainer.classList.add('active');
+            initVisualizer();
+            await setupAudioAnalysis();
+            loadWelcome();
+        });
+
+        visualizerDiv.addEventListener('mousedown', startRecording);
+        visualizerDiv.addEventListener('mouseup', stopRecording);
+        visualizerDiv.addEventListener('mouseleave', stopRecording);
+        
+        visualizerDiv.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startRecording();
+        });
+        
+        visualizerDiv.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            stopRecording();
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (audioCanvas) {
+                const rect = audioCanvas.getBoundingClientRect();
+                audioCanvas.width = rect.width * 2;
+                audioCanvas.height = rect.height * 2;
+                canvasCtx.scale(2, 2);
+            }
+        });
+    </script>
+</body>
+</html>
