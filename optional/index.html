@@ -232,7 +232,7 @@
         }
 
         .visualizer-status {
-            margin-bottom: 16px;
+            margin-bottom: 32px;
             color: #A1A1A6;
             font-size: 0.8em;
             font-style: italic;
@@ -244,25 +244,89 @@
             width: 100%;
             height: 420px;
             cursor: pointer;
-            background: transparent;
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
+            background: rgba(35, 30, 30, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-radius: 28px;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 40px;
+            padding: 24px 24px 40px 24px;
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            border: none;
+            border: 1px solid rgba(224, 100, 57, 0.2);
             position: relative;
+            overflow: hidden;
+            margin: 20px 0;
         }
 
         #visualizer.recording {
-            box-shadow: 0 8px 40px rgba(224, 100, 57, 0.2);
+            box-shadow: 0 8px 40px rgba(224, 100, 57, 0.3);
+            border-color: rgba(224, 100, 57, 0.5);
+        }
+
+        #visualizer.inactive {
+            animation: pulseBorder 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseBorder {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(224, 100, 57, 0.4);
+                border-color: rgba(224, 100, 57, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 20px 8px rgba(224, 100, 57, 0.2);
+                border-color: rgba(224, 100, 57, 0.7);
+            }
         }
 
         #visualizer:active {
             transform: scale(0.98);
+        }
+
+        .visualizer-instruction {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            margin-bottom: 20px;
+            pointer-events: none;
+            padding: 20px 32px;
+        }
+
+        .visualizer-content {
+            position: relative;
+            width: 100%;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .visualizer-icon {
+            width: 56px;
+            height: 56px;
+            animation: pulseIcon 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseIcon {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.9;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+            }
+        }
+
+        .visualizer-text {
+            color: #FFFFFF;
+            font-size: 1em;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            text-align: center;
         }
 
         #audioCanvas {
@@ -274,7 +338,7 @@
         }
 
         .visualizer-hint {
-            margin-top: 24px;
+            margin-top: 36px;
             color: #A1A1A6;
             font-size: 0.9em;
             font-weight: 500;
@@ -296,59 +360,6 @@
             opacity: 1;
         }
 
-        /* Overlay Badge */
-        .overlay-badge {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: 28px;
-            opacity: 1;
-            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 100;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .overlay-badge.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .overlay-badge-icon {
-            width: 64px;
-            height: 64px;
-            margin-bottom: 16px;
-            animation: pulseIcon 2s ease-in-out infinite;
-        }
-
-        @keyframes pulseIcon {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.05);
-                opacity: 0.9;
-            }
-        }
-
-        .overlay-badge-text {
-            color: #FFFFFF;
-            font-size: 1.3em;
-            font-weight: 600;
-            letter-spacing: 0.02em;
-            text-align: center;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-        }
 
         /* Ending Screen */
         .ending-screen {
@@ -502,13 +513,18 @@
         <div class="visualizer-container">
             <div class="visualizer-hint">Press and hold the waveform to speak. Please record for at least two seconds.</div>
             <div id="visualizer">
-                <canvas id="audioCanvas"></canvas>
-                <div class="overlay-badge hidden" id="overlayBadge">
-                    <svg class="overlay-badge-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <div class="visualizer-instruction">
+                    <svg class="visualizer-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 14C13.66 14 15 12.66 15 11V5C15 3.34 13.66 2 12 2C10.34 2 9 3.34 9 5V11C9 12.66 10.34 14 12 14Z" fill="#E06439"/>
                         <path d="M17 11C17 14.53 14.39 17.14 11 17.93V19H14C14.55 19 15 19.45 15 20C15 20.55 14.55 21 14 21H10C9.45 21 9 20.55 9 20C9 19.45 9.45 19 10 19H13V17.93C9.61 17.14 7 14.53 7 11H9C9 13.76 11.24 16 14 16H12C14.76 16 17 13.76 17 11V11Z" fill="#E06439"/>
                     </svg>
-                    <div class="overlay-badge-text">Press & Hold Here to Speak</div>
+                    <div class="visualizer-text">
+                        Click & Hold Within This Box to Speak<br/>
+                        <span style="font-size: 0.9em; opacity: 0.8;">or Press & Hold Space Bar</span>
+                    </div>
+                </div>
+                <div class="visualizer-content">
+                    <canvas id="audioCanvas"></canvas>
                 </div>
             </div>
             <div class="visualizer-status">Blue: Microphone Standby · Orange: Recording Active</div>
@@ -561,7 +577,6 @@
         const userMessages = document.getElementById('userMessages');
         const thinkingBubble = document.getElementById('thinkingBubble');
         const recordingIndicator = document.getElementById('recordingIndicator');
-        const overlayBadge = document.getElementById('overlayBadge');
         const endingScreen = document.getElementById('endingScreen');
 
         // State
@@ -572,7 +587,6 @@
         let recordingTimeout = null;
         let currentAudio = null;
         let welcomeData = null;
-        let overlayHidden = true;
         let lastInteractionTime = Date.now();
         let inactivityTimer = null;
 
@@ -725,16 +739,14 @@
                             currentAudio = new Audio('data:audio/wav;base64,' + data.audio_data);
                             currentAudio.play().catch(err => console.error('Audio error:', err));
                             
-                            // Show overlay badge after welcome message finishes
+                            // Start inactivity timer after welcome message finishes
                             currentAudio.addEventListener('ended', () => {
-                                setTimeout(() => {
-                                    showOverlayBadge();
-                                }, 500);
+                                resetInactivityTimer();
                             });
                         } else {
-                            // If no audio, show overlay badge after a short delay
+                            // If no audio, start inactivity timer after a short delay
                             setTimeout(() => {
-                                showOverlayBadge();
+                                resetInactivityTimer();
                             }, 2000);
                         }
                     }
@@ -844,29 +856,22 @@
             resetInactivityTimer();
         }
 
-        // Overlay Badge Functions
-        function showOverlayBadge() {
-            overlayBadge.classList.remove('hidden');
-            overlayHidden = false;
-        }
-
-        function hideOverlayBadge() {
-            overlayBadge.classList.add('hidden');
-            overlayHidden = true;
-        }
-
+        // Inactivity Timer Functions
         function resetInactivityTimer() {
             lastInteractionTime = Date.now();
+            
+            // Remove inactive class when user interacts
+            visualizerDiv.classList.remove('inactive');
             
             if (inactivityTimer) {
                 clearTimeout(inactivityTimer);
             }
             
-            // Show overlay after 30 seconds of inactivity
+            // Add inactive class after 30 seconds of inactivity
             inactivityTimer = setTimeout(() => {
                 const timeSinceLastInteraction = Date.now() - lastInteractionTime;
                 if (timeSinceLastInteraction >= 30000 && !isRecording) {
-                    showOverlayBadge();
+                    visualizerDiv.classList.add('inactive');
                 }
             }, 30000);
         }
@@ -910,16 +915,18 @@
             stopRecording();
         });
 
-        // Hide overlay badge on hover
-        visualizerDiv.addEventListener('mouseenter', () => {
-            if (!overlayHidden) {
-                hideOverlayBadge();
+        // Space bar recording
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !e.repeat && appContainer.classList.contains('active')) {
+                e.preventDefault();
+                startRecording();
             }
         });
 
-        visualizerDiv.addEventListener('touchstart', (e) => {
-            if (!overlayHidden) {
-                hideOverlayBadge();
+        document.addEventListener('keyup', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                stopRecording();
             }
         });
 
