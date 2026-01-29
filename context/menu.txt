@@ -6,22 +6,21 @@ ALL DRINKS ARE FREE!
 
 1. Espresso - Pure espresso shot(s)
 
-2. Hot Coffee
+2. Americano - Espresso with hot water
 
 3. Iced Latte - Espresso with cold milk over ice
 
-4. Iced Coffee 
+4. Iced Americano - Espresso with cold water over ice
 
 5. Latte - Espresso with steamed milk
 
-6. Mocha - Latte with chocolate
+6. Cocoa - Rich hot chocolate
 
-7. Iced Mocha - Iced latte with chocolate
+7. Iced Cocoa - Cold chocolate milk drink
 
-8. Cortado
+8. Mocha - Latte with chocolate
 
-9. Cappuccino
-
+9. Iced Mocha - Iced latte with chocolate
 
 
 === CUSTOMIZATION OPTIONS ===
