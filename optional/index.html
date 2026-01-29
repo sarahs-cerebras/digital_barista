@@ -75,7 +75,7 @@
         }
 
         .start-button:active {
-            transform: scale(0.98);
+            transform: translateX(-50%) scale(0.98);
         }
 
         /* Main App */
@@ -433,6 +433,15 @@
             border: 2px solid rgba(0, 0, 0, 0.1);
         }
 
+        .ending-order-number {
+            margin-top: 32px;
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #FFFFFF;
+            letter-spacing: 0.02em;
+            text-align: center;
+        }
+
         /* Reset text */
         .reset-text {
             position: fixed;
@@ -547,6 +556,7 @@
         <h1 class="ending-title">Thanks for your order!</h1>
         <p class="ending-subtitle">You can check on the status of your order at this QR Code</p>
         <img src="cerebras_assets/ending_qr_code.png" alt="Order Status QR Code" class="ending-qr-code" />
+        <p class="ending-order-number" id="orderNumber"></p>
     </div>
 
     <script>
@@ -580,6 +590,7 @@
         const thinkingBubble = document.getElementById('thinkingBubble');
         const recordingIndicator = document.getElementById('recordingIndicator');
         const endingScreen = document.getElementById('endingScreen');
+        const orderNumberElement = document.getElementById('orderNumber');
 
         // State
         let audioContext, analyser, dataArray, canvasCtx;
@@ -589,6 +600,7 @@
         let recordingTimeout = null;
         let currentAudio = null;
         let welcomeData = null;
+        let orderNumber = null;
         let lastInteractionTime = Date.now();
         let inactivityTimer = null;
 
@@ -820,6 +832,11 @@
                             
                             addMessage(data.response_text, "assistant");
                             
+                            // Store order number if present
+                            if (data.order_number) {
+                                orderNumber = data.order_number;
+                            }
+                            
                             // Check if order is complete
                             if (data.state === "complete" && data.order_complete === true) {
                                 showEndingScreen();
@@ -890,6 +907,13 @@
         // Ending Screen Function
         function showEndingScreen() {
             endingScreen.classList.add('active');
+            
+            // Display order number if available
+            if (orderNumber) {
+                orderNumberElement.textContent = `Order Number ${orderNumber}`;
+            } else {
+                orderNumberElement.textContent = '';
+            }
             
             // Stop any ongoing recording
             if (isRecording) {
