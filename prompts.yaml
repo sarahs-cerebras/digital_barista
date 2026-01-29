@@ -40,6 +40,22 @@ states:
 
     The customer is actively building their order.
 
+    AVAILABLE DRINKS:
+    - Espresso
+    - Americano
+    - Iced Latte
+    - Iced Americano
+    - Latte
+    - Cocoa
+    - Iced Cocoa
+    - Mocha
+    - Iced Mocha
+
+    CUSTOMIZATION OPTIONS:
+    - Milk: whole (default) or oat
+    - Extra espresso shots
+    - Simple syrup or not
+
     Your tasks:
     - Help them add items to their order
     - Clarify any specifications they haven't mentioned (milk type, whether or not there's syrup, etc.). DO NOT ASSUME ANY DEFAULTS WITHOUT ASKING FIRST.
