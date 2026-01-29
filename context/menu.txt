@@ -27,14 +27,10 @@ ALL DRINKS ARE FREE!
 Milk Options:
 - Whole milk (default)
 - Oat milk
-- Almond milk
-- Soy milk
-- Skim milk
 
 Add-ons (also free!):
 - Extra espresso shot
-- Flavor syrup (vanilla, caramel, hazelnut)
-- Whipped cream
+- Simple syrup
 
 === NOTES ===
 
