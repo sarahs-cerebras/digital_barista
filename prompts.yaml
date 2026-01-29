@@ -53,8 +53,8 @@ states:
 
     CUSTOMIZATION OPTIONS:
     - Milk: whole (default) or oat
-    - Extra espresso shots
-    - Simple syrup or not
+    - Extra espresso shots (max one)
+    - Simple syrup or not (max 4 pumps)
 
     Your tasks:
     - Help them add items to their order

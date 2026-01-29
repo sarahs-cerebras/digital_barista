@@ -29,8 +29,8 @@ Milk Options:
 - Oat milk
 
 Add-ons (also free!):
-- Extra espresso shot
-- Simple syrup
+- Extra espresso shot (max 1)
+- Simple syrup (max 4 pumps)
 
 === NOTES ===
 
